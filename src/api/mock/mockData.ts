@@ -52,6 +52,18 @@ export const CURRENT_USER: UserProfile = {
       created_at: new Date().toISOString(),
     },
   ],
+  prompts: [
+    {
+      id: 'p_me_1',
+      question: 'A non-negotiable for me is...',
+      answer: 'Curiosity about the world, good taste in electronic music, and kindness to service staff.',
+    },
+    {
+      id: 'p_me_2',
+      question: 'Together, we could...',
+      answer: 'Catch a sunrise at Mt. Takao and discover underground jazz kissatens in Shibuya.',
+    },
+  ],
   created_at: '2024-01-10T10:00:00Z',
   updated_at: new Date().toISOString(),
 };
@@ -107,6 +119,18 @@ export const MOCK_DISCOVERY_PROFILES: UserProfile[] = [
         created_at: new Date().toISOString(),
       },
     ],
+    prompts: [
+      {
+        id: 'p_001_1',
+        question: 'A non-negotiable for me is...',
+        answer: 'Appreciating quiet Sunday mornings with hot matcha and analog vinyl records.',
+      },
+      {
+        id: 'p_001_2',
+        question: 'The best way to win me over is...',
+        answer: 'Take me to a film photography exhibition or an obscure jazz café.',
+      },
+    ],
     created_at: '2024-01-15T12:00:00Z',
     updated_at: new Date().toISOString(),
   },
@@ -160,6 +184,18 @@ export const MOCK_DISCOVERY_PROFILES: UserProfile[] = [
         created_at: new Date().toISOString(),
       },
     ],
+    prompts: [
+      {
+        id: 'p_002_1',
+        question: 'My simple pleasures...',
+        answer: 'Freshly baked sourdough, natural orange wine, and golden hour architectural walks.',
+      },
+      {
+        id: 'p_002_2',
+        question: 'I get overly excited about...',
+        answer: 'Brutalist structures and designing eco-friendly timber pavilions in Tokyo.',
+      },
+    ],
     created_at: '2024-01-18T14:30:00Z',
     updated_at: new Date().toISOString(),
   },
@@ -203,6 +239,18 @@ export const MOCK_DISCOVERY_PROFILES: UserProfile[] = [
         media_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&q=80',
         display_order: 1,
         created_at: new Date().toISOString(),
+      },
+    ],
+    prompts: [
+      {
+        id: 'p_003_1',
+        question: 'Dating me is like...',
+        answer: 'First tracks on a surf morning followed by hand-brewed Geisha pour-overs.',
+      },
+      {
+        id: 'p_003_2',
+        question: 'I will pick the restaurant if...',
+        answer: 'You appreciate artisanal coffee or post-run ramen spots.',
       },
     ],
     created_at: '2024-02-01T09:00:00Z',
@@ -250,6 +298,18 @@ export const MOCK_DISCOVERY_PROFILES: UserProfile[] = [
         created_at: new Date().toISOString(),
       },
     ],
+    prompts: [
+      {
+        id: 'p_004_1',
+        question: 'Teach me something about...',
+        answer: 'Your favorite album that changed your perspective on music or sound.',
+      },
+      {
+        id: 'p_004_2',
+        question: 'Typical Sunday...',
+        answer: 'Rehearsing with my cello quartet, museum gallery strolls, and craft tea.',
+      },
+    ],
     created_at: '2024-02-05T18:00:00Z',
     updated_at: new Date().toISOString(),
   },
@@ -285,6 +345,18 @@ export const MOCK_DISCOVERY_PROFILES: UserProfile[] = [
         media_url: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=800&q=80',
         display_order: 0,
         created_at: new Date().toISOString(),
+      },
+    ],
+    prompts: [
+      {
+        id: 'p_005_1',
+        question: 'A boundary of mine is...',
+        answer: 'Being fully present during dates — no endless phone scrolling!',
+      },
+      {
+        id: 'p_005_2',
+        question: 'We will get along if...',
+        answer: 'You appreciate sustainable style and spontaneous bullet train weekend trips.',
       },
     ],
     created_at: '2024-02-10T11:00:00Z',

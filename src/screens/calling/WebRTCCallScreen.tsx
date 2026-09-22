@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { BlurView } from 'expo-blur';
-import { Wifi, PhoneCall } from 'lucide-react-native';
+import { Wifi } from 'lucide-react-native';
 import { Colors, BorderRadius, Spacing, Typography } from '../../theme';
 import { DraggablePiP } from '../../components/calling/DraggablePiP';
 import { CallControlBar } from '../../components/calling/CallControlBar';
@@ -68,7 +68,7 @@ export const WebRTCCallScreen: React.FC<WebRTCCallScreenProps> = ({ route, navig
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" translucent />
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Fullscreen Remote Video Feed or Audio Avatar Background */}
       {callType === 'VIDEO' && isConnected && !activeSession?.is_video_muted ? (
@@ -76,6 +76,7 @@ export const WebRTCCallScreen: React.FC<WebRTCCallScreenProps> = ({ route, navig
           source={{ uri: partnerAvatar }}
           style={StyleSheet.absoluteFill}
           contentFit="cover"
+          priority="high"
         />
       ) : (
         <View style={[StyleSheet.absoluteFill, styles.audioFallback]}>
@@ -83,7 +84,7 @@ export const WebRTCCallScreen: React.FC<WebRTCCallScreenProps> = ({ route, navig
             source={{ uri: partnerAvatar }}
             style={StyleSheet.absoluteFill}
             contentFit="cover"
-            blurRadius={40}
+            blurRadius={50}
           />
           <View style={styles.audioCenterBadge}>
             <Image
@@ -93,24 +94,24 @@ export const WebRTCCallScreen: React.FC<WebRTCCallScreenProps> = ({ route, navig
             />
             <Text style={[Typography.h2, styles.centerName]}>{partnerName}</Text>
             <Text style={styles.callStateLabel}>
-              {isConnected ? 'In Call' : 'Connecting HD Audio...'}
+              {isConnected ? 'HD Audio Connected' : 'Connecting Audio...'}
             </Text>
           </View>
         </View>
       )}
 
-      {/* Dark overlay gradient */}
+      {/* Atmospheric dark vignette overlay */}
       <View style={styles.vignetteOverlay} />
 
       <SafeAreaView style={styles.safeArea}>
-        {/* Top Header Card */}
+        {/* Top Frosted Header Card */}
         <View style={styles.headerWrapper}>
-          <BlurView intensity={60} tint="dark" style={styles.headerCard}>
+          <BlurView intensity={75} tint="dark" style={styles.headerCard}>
             <View style={styles.headerRow}>
               <View>
                 <Text style={styles.headerName}>{partnerName}</Text>
                 <Text style={styles.timerText}>
-                  {isConnected ? formatTimer(duration) : 'Ringing...'}
+                  {isConnected ? formatTimer(duration) : 'Calling...'}
                 </Text>
               </View>
 
@@ -130,7 +131,7 @@ export const WebRTCCallScreen: React.FC<WebRTCCallScreenProps> = ({ route, navig
           />
         )}
 
-        {/* Bottom Call Controls */}
+        {/* Bottom Call Controls with 56dp minimum touch targets */}
         <View style={styles.bottomControls}>
           <CallControlBar
             isAudioMuted={activeSession?.is_audio_muted || false}
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
   },
   vignetteOverlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(10, 13, 20, 0.25)',
+    backgroundColor: 'rgba(15, 17, 21, 0.3)',
   },
   audioFallback: {
     alignItems: 'center',
@@ -174,16 +175,17 @@ const styles = StyleSheet.create({
     height: 140,
     borderRadius: 70,
     borderWidth: 3,
-    borderColor: '#FFFFFF',
+    borderColor: Colors.textPrimary,
     marginBottom: 16,
   },
   centerName: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     marginBottom: 4,
+    fontWeight: '800',
   },
   callStateLabel: {
     ...Typography.bodySecondary,
-    color: Colors.secondary,
+    color: Colors.brandSecondaryLight,
   },
   headerWrapper: {
     paddingHorizontal: Spacing.xl,
@@ -196,9 +198,9 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: 'rgba(20, 24, 35, 0.7)',
+    backgroundColor: Colors.glassBackgroundDark,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: Colors.glassBorder,
   },
   headerRow: {
     flexDirection: 'row',
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   headerName: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '700',
     fontSize: 16,
   },
@@ -218,15 +220,15 @@ const styles = StyleSheet.create({
   hdBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.neutralCard,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: BorderRadius.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: Colors.glassBorder,
   },
   hdText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 11,
     fontWeight: '800',
   },

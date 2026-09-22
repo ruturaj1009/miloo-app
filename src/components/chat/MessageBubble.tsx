@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'expo-image';
 import { Check, CheckCheck, Clock } from 'lucide-react-native';
 import { ChatMessage } from '../../types/chat.types';
-import { Colors, BorderRadius, Spacing, Typography } from '../../theme';
+import { Colors, Gradients, BorderRadius, Spacing, Typography, Shadows } from '../../theme';
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -16,7 +16,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMe }) =
     <View style={[styles.row, isMe ? styles.rowMe : styles.rowPartner]}>
       {isMe ? (
         <LinearGradient
-          colors={[Colors.primaryGradientStart, Colors.primaryGradientEnd]}
+          colors={Gradients.brand}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.bubble, styles.bubbleMe]}
@@ -26,6 +26,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMe }) =
               source={{ uri: message.media_url }}
               style={styles.attachmentImage}
               contentFit="cover"
+              priority="high"
             />
           )}
 
@@ -36,7 +37,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMe }) =
             {message.is_pending ? (
               <Clock size={12} color="rgba(255, 255, 255, 0.7)" />
             ) : message.is_read ? (
-              <CheckCheck size={14} color="#38BDF8" />
+              <CheckCheck size={14} color={Colors.verifiedBadge} />
             ) : (
               <Check size={14} color="rgba(255, 255, 255, 0.7)" />
             )}
@@ -49,6 +50,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isMe }) =
               source={{ uri: message.media_url }}
               style={styles.attachmentImage}
               contentFit="cover"
+              priority="high"
             />
           )}
 
@@ -76,24 +78,20 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   bubble: {
-    maxWidth: '78%',
+    maxWidth: '80%',
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: BorderRadius.xl,
   },
   bubbleMe: {
     borderBottomRightRadius: BorderRadius.xs,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 3,
+    ...Shadows.glowPrimary,
   },
   bubblePartner: {
-    backgroundColor: 'rgba(32, 39, 56, 0.9)',
+    backgroundColor: Colors.backgroundElevated,
     borderBottomLeftRadius: BorderRadius.xs,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: Colors.glassBorder,
   },
   attachmentImage: {
     width: 220,
@@ -103,13 +101,13 @@ const styles = StyleSheet.create({
   },
   textMe: {
     ...Typography.body,
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 15,
     lineHeight: 20,
   },
   textPartner: {
     ...Typography.body,
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 15,
     lineHeight: 20,
   },

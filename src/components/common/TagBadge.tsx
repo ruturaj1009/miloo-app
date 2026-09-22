@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
-import { Colors, BorderRadius, Spacing, Typography } from '../../theme';
+import { Colors, BorderRadius, Spacing, Typography, HitSlop, Shadows } from '../../theme';
 
 interface TagBadgeProps {
   label: string;
+  category?: 'Hobbies' | 'Zodiac' | 'Music' | 'Values' | 'Lifestyle';
   icon?: React.ReactNode;
   selected?: boolean;
   onPress?: () => void;
@@ -12,18 +13,18 @@ interface TagBadgeProps {
 
 export const TagBadge: React.FC<TagBadgeProps> = ({
   label,
+  category,
   icon,
   selected = false,
   onPress,
   style,
 }) => {
-  const Container = onPress ? TouchableOpacity : TouchableOpacity;
-
   return (
-    <Container
+    <TouchableOpacity
       activeOpacity={0.75}
       onPress={onPress}
       disabled={!onPress}
+      hitSlop={onPress ? HitSlop.small : undefined}
       style={[
         styles.badge,
         selected ? styles.badgeSelected : styles.badgeDefault,
@@ -31,6 +32,11 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
       ]}
     >
       {icon}
+      {category && (
+        <Text style={[styles.categoryLabel, selected && styles.categorySelected]}>
+          {category}:
+        </Text>
+      )}
       <Text
         style={[
           Typography.tag,
@@ -39,7 +45,7 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
       >
         {label}
       </Text>
-    </Container>
+    </TouchableOpacity>
   );
 };
 
@@ -47,34 +53,41 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 7,
+    paddingHorizontal: 14,
     borderRadius: BorderRadius.full,
     gap: 6,
     marginRight: Spacing.xs,
     marginBottom: Spacing.xs,
   },
   badgeDefault: {
-    backgroundColor: 'rgba(255, 255, 255, 0.07)',
+    backgroundColor: Colors.neutralCard,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: Colors.glassBorder,
   },
   badgeSelected: {
-    backgroundColor: 'rgba(139, 92, 246, 0.25)',
+    backgroundColor: 'rgba(124, 58, 237, 0.22)',
     borderWidth: 1.5,
-    borderColor: Colors.secondary,
-    shadowColor: Colors.secondary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 4,
+    borderColor: Colors.brandSecondary,
+    ...Shadows.glowSecondary,
+  },
+  categoryLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  categorySelected: {
+    color: Colors.brandSecondaryLight,
   },
   textDefault: {
     color: Colors.textSecondary,
     fontSize: 13,
+    fontWeight: '500',
   },
   textSelected: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '700',
     fontSize: 13,
   },

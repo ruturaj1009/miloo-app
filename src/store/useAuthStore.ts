@@ -30,7 +30,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     updated_at: new Date().toISOString(),
   },
   token: 'mock_jwt_token_demo_123456',
-  isAuthenticated: false, // Set to true by default for immediate live preview, user can logout or test auth screen
+  isAuthenticated: true, // Set to true by default for immediate live preview, user can logout or test auth screen
   isLoading: false,
   error: null,
   phoneNumberForOtp: null,

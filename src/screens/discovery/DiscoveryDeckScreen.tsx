@@ -7,8 +7,8 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import { SlidersHorizontal, Flame, Sparkles } from 'lucide-react-native';
-import { Colors, Spacing, Typography } from '../../theme';
+import { SlidersHorizontal, Flame } from 'lucide-react-native';
+import { Colors, Spacing, Typography, HitSlop } from '../../theme';
 import { SwipeableCard } from '../../components/discovery/SwipeableCard';
 import { ActionDock } from '../../components/discovery/ActionDock';
 import { ProfileDetailsSheet } from '../../components/discovery/ProfileDetailsSheet';
@@ -24,7 +24,7 @@ interface DiscoveryDeckScreenProps {
 }
 
 export const DiscoveryDeckScreen: React.FC<DiscoveryDeckScreenProps> = ({ navigation }) => {
-  const { profiles, currentIndex, fetchDiscoveryFeed, swipe, undoSwipe, resetDeck } =
+  const { profiles, currentIndex, fetchDiscoveryFeed, swipe, undoSwipe } =
     useDiscoveryStore();
   const {
     isCelebrationVisible,
@@ -69,26 +69,29 @@ export const DiscoveryDeckScreen: React.FC<DiscoveryDeckScreenProps> = ({ naviga
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="light-content" backgroundColor={Colors.backgroundPrimary} />
 
-      {/* Top Header */}
+      {/* Top Brand Header */}
       <View style={styles.topHeader}>
         <View style={styles.brandRow}>
-          <Flame size={26} color={Colors.primary} fill={Colors.primary} />
+          <Flame size={28} color={Colors.brandPrimary} fill={Colors.brandPrimary} />
           <Text style={styles.brandTitle}>MILOO</Text>
         </View>
 
         <View style={styles.headerRight}>
           <TouchableOpacity
             onPress={() => navigation?.navigate('Settings')}
+            hitSlop={HitSlop.standard}
             style={styles.headerIconButton}
+            accessibilityLabel="Open settings and discovery filters"
+            accessibilityRole="button"
           >
             <SlidersHorizontal size={20} color={Colors.textSecondary} />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Main Deck Container */}
+      {/* Main Deck Container (Cards occupy ~77% viewport height) */}
       <View style={styles.deckContainer}>
         {hasMoreCards ? (
           visibleProfiles
@@ -110,7 +113,7 @@ export const DiscoveryDeckScreen: React.FC<DiscoveryDeckScreenProps> = ({ naviga
         )}
       </View>
 
-      {/* Floating Frosted Glass Action Dock */}
+      {/* Floating Action Dock in bottom natural thumb reach zone */}
       {hasMoreCards && (
         <ActionDock
           canUndo={currentIndex > 0}
@@ -119,13 +122,12 @@ export const DiscoveryDeckScreen: React.FC<DiscoveryDeckScreenProps> = ({ naviga
           onSuperlike={() => swipe('SUPERLIKE')}
           onLike={() => swipe('LIKE')}
           onBoost={() => {
-            // Simulated boost trigger
-            alert('🚀 30-Minute Boost Activated! Your profile is now top 1 in your area.');
+            alert('🚀 30-Minute Boost Activated! Your profile is now #1 in your area.');
           }}
         />
       )}
 
-      {/* SCR-04: "It's a Match!" Celebration Modal */}
+      {/* Celebration Modal when mutual match occurs */}
       <MatchCelebrationModal
         visible={isCelebrationVisible}
         partnerProfile={celebrationProfile}
@@ -133,11 +135,13 @@ export const DiscoveryDeckScreen: React.FC<DiscoveryDeckScreenProps> = ({ naviga
         onKeepSwiping={dismissMatchCelebration}
       />
 
-      {/* Extended Profile Details Sheet */}
+      {/* Extended Profile Details Sheet with prompt boxes & action dock */}
       <ProfileDetailsSheet
         visible={isDetailsVisible}
         profile={detailsProfile}
         onClose={() => setIsDetailsVisible(false)}
+        onPass={() => swipe('PASS')}
+        onLike={() => swipe('LIKE')}
       />
     </SafeAreaView>
   );
@@ -162,25 +166,24 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   brandTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: 2,
+    color: Colors.textPrimary,
+    letterSpacing: 3,
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
   },
   headerIconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: Colors.neutralCard,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: Colors.glassBorder,
   },
   deckContainer: {
     flex: 1,

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, ViewStyle, TextStyle, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { Colors, BorderRadius, Typography } from '../../theme';
+import { Colors, Gradients, BorderRadius, Typography, Metrics, Shadows } from '../../theme';
 
 interface GradientButtonProps {
   title: string;
@@ -18,7 +18,7 @@ interface GradientButtonProps {
 export const GradientButton: React.FC<GradientButtonProps> = ({
   title,
   onPress,
-  colors = [Colors.primaryGradientStart, Colors.primaryGradientEnd],
+  colors = Gradients.brand,
   style,
   textStyle,
   icon,
@@ -63,13 +63,11 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: BorderRadius.full,
     overflow: 'hidden',
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
+    minHeight: Metrics.touchTargetMin,
+    ...Shadows.glowPrimary,
   },
   gradient: {
+    minHeight: Metrics.touchTargetMin,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -81,9 +79,10 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     fontWeight: '700',
     fontSize: 16,
+    letterSpacing: 0.3,
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.45,
     shadowOpacity: 0,
   },
 });

@@ -9,12 +9,13 @@ import {
   Platform,
   ScrollView,
   Modal,
+  StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Flame, Phone, Mail, ArrowRight, X, ShieldCheck } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { Colors, BorderRadius, Spacing, Typography } from '../../theme';
+import { Colors, Gradients, BorderRadius, Spacing, Typography, HitSlop, Shadows } from '../../theme';
 import { GradientButton } from '../../components/common/GradientButton';
 import { useAuthStore } from '../../store/useAuthStore';
 
@@ -79,9 +80,11 @@ export const AuthScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={Colors.backgroundPrimary} />
+
       <LinearGradient
-        colors={['#180828', '#0A0D14', '#0A0D14']}
-        locations={[0, 0.4, 1]}
+        colors={['#241535', Colors.backgroundPrimary, Colors.backgroundPrimary]}
+        locations={[0, 0.45, 1]}
         style={StyleSheet.absoluteFill}
       />
 
@@ -96,13 +99,13 @@ export const AuthScreen: React.FC = () => {
           {/* Logo & Brand Header */}
           <View style={styles.logoSection}>
             <LinearGradient
-              colors={[Colors.primaryGradientStart, Colors.primaryGradientEnd]}
+              colors={Gradients.brand}
               style={styles.logoCircle}
             >
-              <Flame size={48} color="#FFFFFF" />
+              <Flame size={48} color={Colors.textPrimary} fill={Colors.textPrimary} />
             </LinearGradient>
             <Text style={styles.brandTitle}>MILOO</Text>
-            <Text style={styles.tagline}>Ultra-Luxe Real-Time Dating</Text>
+            <Text style={styles.tagline}>Real-Time Dating for Modern Connections</Text>
           </View>
 
           {/* Mode Switcher (Phone / Email) */}
@@ -111,9 +114,18 @@ export const AuthScreen: React.FC = () => {
               activeOpacity={0.8}
               onPress={() => setAuthMode('PHONE')}
               style={[styles.tabButton, authMode === 'PHONE' && styles.tabButtonActive]}
+              accessibilityRole="tab"
             >
-              <Phone size={16} color={authMode === 'PHONE' ? '#FFFFFF' : Colors.textMuted} />
-              <Text style={[styles.tabText, authMode === 'PHONE' && styles.tabTextActive]}>
+              <Phone
+                size={16}
+                color={authMode === 'PHONE' ? Colors.textPrimary : Colors.textMuted}
+              />
+              <Text
+                style={[
+                  styles.tabText,
+                  authMode === 'PHONE' && styles.tabTextActive,
+                ]}
+              >
                 Phone Number
               </Text>
             </TouchableOpacity>
@@ -122,9 +134,18 @@ export const AuthScreen: React.FC = () => {
               activeOpacity={0.8}
               onPress={() => setAuthMode('EMAIL')}
               style={[styles.tabButton, authMode === 'EMAIL' && styles.tabButtonActive]}
+              accessibilityRole="tab"
             >
-              <Mail size={16} color={authMode === 'EMAIL' ? '#FFFFFF' : Colors.textMuted} />
-              <Text style={[styles.tabText, authMode === 'EMAIL' && styles.tabTextActive]}>
+              <Mail
+                size={16}
+                color={authMode === 'EMAIL' ? Colors.textPrimary : Colors.textMuted}
+              />
+              <Text
+                style={[
+                  styles.tabText,
+                  authMode === 'EMAIL' && styles.tabTextActive,
+                ]}
+              >
                 Email
               </Text>
             </TouchableOpacity>
@@ -164,12 +185,13 @@ export const AuthScreen: React.FC = () => {
               title="Continue"
               onPress={handleSendOtp}
               loading={isLoading}
-              icon={<ArrowRight size={20} color="#FFFFFF" />}
+              colors={Gradients.brand}
+              icon={<ArrowRight size={20} color={Colors.textPrimary} />}
               style={styles.continueButton}
             />
           </View>
 
-          {/* Social Auth / Quick Demo bypass */}
+          {/* Social Auth / Legal */}
           <View style={styles.footerSection}>
             <Text style={styles.legalNotice}>
               By continuing, you agree to our Terms of Service & Privacy Policy.
@@ -178,27 +200,30 @@ export const AuthScreen: React.FC = () => {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* 6-Digit OTP Bottom Sheet Modal */}
+      {/* 6-Digit OTP Bottom Sheet Modal with top corners border-radius: 28 */}
       <Modal visible={isOtpModalVisible} transparent animationType="slide">
         <View style={styles.modalBackdrop}>
           <BlurView intensity={90} tint="dark" style={styles.modalSheet}>
             <View style={styles.modalHeader}>
               <TouchableOpacity
                 onPress={() => setIsOtpModalVisible(false)}
+                hitSlop={HitSlop.standard}
                 style={styles.closeBtn}
+                accessibilityLabel="Close verification"
+                accessibilityRole="button"
               >
-                <X size={22} color={Colors.textSecondary} />
+                <X size={20} color={Colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
             <View style={styles.otpIconBadge}>
-              <ShieldCheck size={32} color={Colors.secondary} />
+              <ShieldCheck size={32} color={Colors.brandSecondaryLight} />
             </View>
 
             <Text style={[Typography.h2, styles.otpTitle]}>Verification Code</Text>
             <Text style={styles.otpSubtitle}>
               Please enter the 6-digit code sent to{' '}
-              <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>
+              <Text style={{ color: Colors.textPrimary, fontWeight: '700' }}>
                 {authMode === 'PHONE' ? `${countryCode} ${phoneNumber}` : email}
               </Text>
             </Text>
@@ -208,15 +233,14 @@ export const AuthScreen: React.FC = () => {
               {otpDigits.map((digit, idx) => (
                 <TextInput
                   key={idx}
-                  ref={(ref) => { otpInputRefs.current[idx] = ref; }}
+                  ref={(ref) => {
+                    otpInputRefs.current[idx] = ref;
+                  }}
                   value={digit}
                   onChangeText={(t) => handleOtpChange(t, idx)}
                   keyboardType="number-pad"
                   maxLength={1}
-                  style={[
-                    styles.otpBox,
-                    digit ? styles.otpBoxFilled : null,
-                  ]}
+                  style={[styles.otpBox, digit ? styles.otpBoxFilled : null]}
                 />
               ))}
             </View>
@@ -225,10 +249,11 @@ export const AuthScreen: React.FC = () => {
             <View style={styles.resendRow}>
               {resendTimer > 0 ? (
                 <Text style={styles.resendText}>
-                  Resend code in <Text style={{ color: Colors.secondary }}>{resendTimer}s</Text>
+                  Resend code in{' '}
+                  <Text style={{ color: Colors.brandSecondaryLight }}>{resendTimer}s</Text>
                 </Text>
               ) : (
-                <TouchableOpacity onPress={handleSendOtp}>
+                <TouchableOpacity onPress={handleSendOtp} hitSlop={HitSlop.small}>
                   <Text style={styles.resendActiveText}>Resend Code</Text>
                 </TouchableOpacity>
               )}
@@ -238,6 +263,7 @@ export const AuthScreen: React.FC = () => {
               title="Verify & Enter"
               onPress={() => handleVerify(otpDigits.join(''))}
               loading={isLoading}
+              colors={Gradients.brand}
               style={{ marginTop: 24 }}
             />
           </BlurView>
@@ -267,42 +293,42 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xxl,
   },
   logoCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 92,
+    height: 92,
+    borderRadius: 46,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 16,
+    ...Shadows.glowPrimary,
   },
   brandTitle: {
     fontSize: 34,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     letterSpacing: 4,
   },
   tagline: {
     ...Typography.subtitle,
     color: Colors.textSecondary,
     marginTop: 4,
-    letterSpacing: 1,
+    letterSpacing: 0.5,
+    textAlign: 'center',
   },
   tabSwitcher: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: Colors.neutralCard,
     borderRadius: BorderRadius.full,
     padding: 4,
     marginBottom: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.glassBorder,
   },
   tabButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    paddingVertical: 11,
     borderRadius: BorderRadius.full,
     gap: 8,
   },
@@ -315,7 +341,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   tabTextActive: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '700',
   },
   formContainer: {
@@ -337,7 +363,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   countryCodeText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -349,7 +375,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.inputBorder,
     paddingHorizontal: 16,
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 16,
   },
   emailTextInput: {
@@ -359,7 +385,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.inputBorder,
     paddingHorizontal: 16,
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 16,
     marginBottom: Spacing.md,
   },
@@ -383,17 +409,17 @@ const styles = StyleSheet.create({
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: Colors.backgroundBackdrop,
     justifyContent: 'flex-end',
   },
   modalSheet: {
-    backgroundColor: 'rgba(18, 23, 34, 0.98)',
-    borderTopLeftRadius: BorderRadius.xxl,
-    borderTopRightRadius: BorderRadius.xxl,
+    backgroundColor: Colors.backgroundSecondary,
+    borderTopLeftRadius: BorderRadius.sheet,
+    borderTopRightRadius: BorderRadius.sheet,
     padding: Spacing.xl,
     paddingBottom: 48,
     borderTopWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: Colors.glassBorder,
   },
   modalHeader: {
     alignItems: 'flex-end',
@@ -402,23 +428,28 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: Colors.neutralCard,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.glassBorder,
   },
   otpIconBadge: {
     alignSelf: 'center',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    backgroundColor: 'rgba(124, 58, 237, 0.16)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(124, 58, 237, 0.3)',
   },
   otpTitle: {
     textAlign: 'center',
     marginBottom: 6,
+    color: Colors.textPrimary,
   },
   otpSubtitle: {
     ...Typography.bodySecondary,
@@ -436,17 +467,18 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 56,
     borderRadius: BorderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.07)',
+    backgroundColor: Colors.neutralCard,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: Colors.glassBorder,
     textAlign: 'center',
     fontSize: 22,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
   },
   otpBoxFilled: {
-    borderColor: Colors.secondary,
-    backgroundColor: 'rgba(139, 92, 246, 0.12)',
+    borderColor: Colors.brandSecondaryLight,
+    backgroundColor: 'rgba(124, 58, 237, 0.15)',
+    ...Shadows.glowSecondary,
   },
   resendRow: {
     alignItems: 'center',
@@ -458,7 +490,7 @@ const styles = StyleSheet.create({
   },
   resendActiveText: {
     ...Typography.caption,
-    color: Colors.secondary,
+    color: Colors.brandSecondaryLight,
     fontWeight: '700',
   },
 });

@@ -11,8 +11,8 @@ import { BorderRadius, Colors, Shadows } from '../../theme';
 import { VideoOff } from 'lucide-react-native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const PIP_WIDTH = 100;
-const PIP_HEIGHT = 145;
+const PIP_WIDTH = 105;
+const PIP_HEIGHT = 150;
 const PADDING = 16;
 
 interface DraggablePiPProps {
@@ -25,7 +25,7 @@ export const DraggablePiP: React.FC<DraggablePiPProps> = ({
   isVideoMuted = false,
 }) => {
   const translateX = useSharedValue(SCREEN_WIDTH - PIP_WIDTH - PADDING);
-  const translateY = useSharedValue(70);
+  const translateY = useSharedValue(80);
 
   const contextX = useSharedValue(0);
   const contextY = useSharedValue(0);
@@ -48,8 +48,8 @@ export const DraggablePiP: React.FC<DraggablePiPProps> = ({
 
       // Bound within vertical screen height
       const boundedY = Math.min(
-        Math.max(translateY.value, 60),
-        SCREEN_HEIGHT - PIP_HEIGHT - 120
+        Math.max(translateY.value, 70),
+        SCREEN_HEIGHT - PIP_HEIGHT - 130
       );
 
       translateX.value = withSpring(snapX, { damping: 14 });
@@ -75,6 +75,8 @@ export const DraggablePiP: React.FC<DraggablePiPProps> = ({
             source={{ uri: avatarUri }}
             style={styles.pipImage}
             contentFit="cover"
+            priority="high"
+            cachePolicy="memory-disk"
           />
         )}
       </Animated.View>
@@ -92,7 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
+    borderColor: Colors.glassBorderStrong,
     backgroundColor: Colors.backgroundCard,
     zIndex: 100,
     ...Shadows.medium,

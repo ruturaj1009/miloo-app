@@ -16,8 +16,23 @@ export const BorderRadius = {
   md: 12,
   lg: 16,
   xl: 20,
+  card: 28,
   xxl: 28,
+  sheet: 28,
   full: 9999,
+};
+
+export const Metrics = {
+  touchTargetMin: 56,
+  cardBorderRadius: 28,
+  sheetBorderRadius: 28,
+  pillBorderRadius: 9999,
+};
+
+export const HitSlop = {
+  standard: { top: 12, bottom: 12, left: 12, right: 12 },
+  small: { top: 8, bottom: 8, left: 8, right: 8 },
+  large: { top: 16, bottom: 16, left: 16, right: 16 },
 };
 
 export const Shadows = {
@@ -36,14 +51,14 @@ export const Shadows = {
     elevation: 8,
   },
   glowPrimary: {
-    shadowColor: '#FF2D55',
+    shadowColor: '#FF4458',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.45,
     shadowRadius: 18,
     elevation: 10,
   },
   glowCyan: {
-    shadowColor: '#06B6D4',
+    shadowColor: '#00C9FF',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.45,
     shadowRadius: 18,
@@ -51,6 +66,13 @@ export const Shadows = {
   },
   glowGreen: {
     shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.45,
+    shadowRadius: 18,
+    elevation: 10,
+  },
+  glowSecondary: {
+    shadowColor: '#7C3AED',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.45,
     shadowRadius: 18,

@@ -15,15 +15,21 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
   withSequence,
   withDelay,
-  Easing,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, Send, Flame, X } from 'lucide-react-native';
 import { UserProfile } from '../../types/profile.types';
-import { Colors, BorderRadius, Spacing, Typography, Shadows } from '../../theme';
+import {
+  Colors,
+  Gradients,
+  BorderRadius,
+  Spacing,
+  Typography,
+  Shadows,
+  HitSlop,
+} from '../../theme';
 import { CURRENT_USER } from '../../api/mock/mockData';
 import { GradientButton } from '../../components/common/GradientButton';
 
@@ -42,8 +48,8 @@ export const MatchCelebrationModal: React.FC<MatchCelebrationModalProps> = ({
 }) => {
   const [quickMessage, setQuickMessage] = useState('');
 
-  const leftAvatarTranslate = useSharedValue(-200);
-  const rightAvatarTranslate = useSharedValue(200);
+  const leftAvatarTranslate = useSharedValue(-220);
+  const rightAvatarTranslate = useSharedValue(220);
   const heartScale = useSharedValue(0);
   const textScale = useSharedValue(0);
 
@@ -53,20 +59,20 @@ export const MatchCelebrationModal: React.FC<MatchCelebrationModalProps> = ({
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       } catch (_) {}
 
-      // Trigger avatar collision animation
+      // Trigger avatar collision animation with spring dampening
       leftAvatarTranslate.value = withSpring(0, { damping: 12, stiffness: 90 });
       rightAvatarTranslate.value = withSpring(0, { damping: 12, stiffness: 90 });
       heartScale.value = withDelay(
         250,
         withSequence(
-          withSpring(1.3, { damping: 8 }),
+          withSpring(1.35, { damping: 8 }),
           withSpring(1, { damping: 10 })
         )
       );
       textScale.value = withDelay(350, withSpring(1, { damping: 10 }));
     } else {
-      leftAvatarTranslate.value = -200;
-      rightAvatarTranslate.value = 200;
+      leftAvatarTranslate.value = -220;
+      rightAvatarTranslate.value = 220;
       heartScale.value = 0;
       textScale.value = 0;
       setQuickMessage('');
@@ -93,7 +99,9 @@ export const MatchCelebrationModal: React.FC<MatchCelebrationModalProps> = ({
   if (!partnerProfile) return null;
 
   const handleSend = () => {
-    const textToSend = quickMessage.trim() || `Hey ${partnerProfile.first_name}! Great to match with you 😊`;
+    const textToSend =
+      quickMessage.trim() ||
+      `Hey ${partnerProfile.first_name}! Great to match with you 😊`;
     onSendMessage(textToSend);
   };
 
@@ -106,20 +114,30 @@ export const MatchCelebrationModal: React.FC<MatchCelebrationModalProps> = ({
             style={styles.contentContainer}
           >
             {/* Close / Dismiss */}
-            <TouchableOpacity onPress={onKeepSwiping} style={styles.dismissButton}>
-              <X size={24} color={Colors.textSecondary} />
+            <TouchableOpacity
+              onPress={onKeepSwiping}
+              hitSlop={HitSlop.standard}
+              style={styles.dismissButton}
+              accessibilityLabel="Close match modal"
+              accessibilityRole="button"
+            >
+              <X size={22} color={Colors.textSecondary} />
             </TouchableOpacity>
 
-            {/* Sparkles / Match Badge */}
+            {/* Sparkles / Match Emblem */}
             <View style={styles.matchIconBadge}>
-              <Sparkles size={28} color={Colors.primary} />
+              <Sparkles size={28} color={Colors.brandPrimary} />
             </View>
 
             {/* Title */}
             <Animated.View style={[styles.titleWrapper, textAnimatedStyle]}>
               <Text style={styles.matchTitle}>IT'S A MATCH!</Text>
               <Text style={styles.matchSubtitle}>
-                You and <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>{partnerProfile.first_name}</Text> liked each other.
+                You and{' '}
+                <Text style={{ color: Colors.textPrimary, fontWeight: '700' }}>
+                  {partnerProfile.first_name}
+                </Text>{' '}
+                liked each other.
               </Text>
             </Animated.View>
 
@@ -131,20 +149,24 @@ export const MatchCelebrationModal: React.FC<MatchCelebrationModalProps> = ({
                   source={{ uri: CURRENT_USER.photos[0]?.media_url }}
                   style={styles.avatarImage}
                   contentFit="cover"
+                  priority="high"
                 />
               </Animated.View>
 
               {/* Heart Badge Center Overlap */}
               <Animated.View style={[styles.heartBadge, heartAnimatedStyle]}>
-                <Flame size={28} color="#FFFFFF" fill="#FFFFFF" />
+                <Flame size={26} color={Colors.textPrimary} fill={Colors.textPrimary} />
               </Animated.View>
 
               {/* Right (Partner avatar) */}
-              <Animated.View style={[styles.avatarCircle, styles.partnerAvatar, rightAvatarStyle]}>
+              <Animated.View
+                style={[styles.avatarCircle, styles.partnerAvatar, rightAvatarStyle]}
+              >
                 <Image
                   source={{ uri: partnerProfile.photos[0]?.media_url }}
                   style={styles.avatarImage}
                   contentFit="cover"
+                  priority="high"
                 />
               </Animated.View>
             </View>
@@ -162,8 +184,10 @@ export const MatchCelebrationModal: React.FC<MatchCelebrationModalProps> = ({
                 activeOpacity={0.8}
                 onPress={handleSend}
                 style={styles.sendIconBtn}
+                accessibilityLabel="Send quick message"
+                accessibilityRole="button"
               >
-                <Send size={18} color="#FFFFFF" />
+                <Send size={18} color={Colors.textPrimary} />
               </TouchableOpacity>
             </View>
 
@@ -171,11 +195,13 @@ export const MatchCelebrationModal: React.FC<MatchCelebrationModalProps> = ({
             <GradientButton
               title={`Chat with ${partnerProfile.first_name}`}
               onPress={handleSend}
+              colors={Gradients.brand}
               style={styles.chatButton}
             />
 
             <TouchableOpacity
               activeOpacity={0.7}
+              hitSlop={HitSlop.standard}
               onPress={onKeepSwiping}
               style={styles.keepSwipingButton}
             >
@@ -191,7 +217,7 @@ export const MatchCelebrationModal: React.FC<MatchCelebrationModalProps> = ({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: Colors.backgroundBackdrop,
   },
   blurBackdrop: {
     flex: 1,
@@ -209,20 +235,22 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.neutralCard,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.glassBorder,
   },
   matchIconBadge: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(255, 45, 85, 0.18)',
+    backgroundColor: Colors.passBackground,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 45, 85, 0.4)',
+    borderColor: Colors.passGlow,
   },
   titleWrapper: {
     alignItems: 'center',
@@ -231,8 +259,8 @@ const styles = StyleSheet.create({
   matchTitle: {
     fontSize: 32,
     fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: 2,
+    color: Colors.textPrimary,
+    letterSpacing: 2.5,
     textAlign: 'center',
   },
   matchSubtitle: {
@@ -256,7 +284,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     overflow: 'hidden',
     borderWidth: 3,
-    borderColor: '#FFFFFF',
+    borderColor: Colors.textPrimary,
     ...Shadows.glowPrimary,
   },
   myAvatar: {
@@ -277,35 +305,35 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.brandPrimary,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: Colors.textPrimary,
     ...Shadows.glowPrimary,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: Colors.neutralCard,
     borderRadius: BorderRadius.full,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: Colors.glassBorder,
     paddingHorizontal: 16,
     height: 52,
     marginBottom: Spacing.lg,
   },
   quickInput: {
     flex: 1,
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 15,
   },
   sendIconBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: Colors.primary,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: Colors.brandPrimary,
     alignItems: 'center',
     justifyContent: 'center',
   },

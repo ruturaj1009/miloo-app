@@ -52,13 +52,13 @@ const styles = StyleSheet.create({
   bubble: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(32, 39, 56, 0.8)',
+    backgroundColor: Colors.backgroundElevated,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: BorderRadius.xl,
     borderBottomLeftRadius: BorderRadius.xs,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: Colors.glassBorder,
     gap: 8,
   },
   typingLabel: {
@@ -76,6 +76,6 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 2.5,
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.brandSecondaryLight,
   },
 });

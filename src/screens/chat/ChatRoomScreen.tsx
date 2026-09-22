@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { ChevronLeft, Phone, Video, MoreVertical } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Colors, Spacing, Typography } from '../../theme';
+import { Colors, Spacing, Typography, HitSlop, Shadows } from '../../theme';
 import { Avatar } from '../../components/common/Avatar';
 import { MessageBubble } from '../../components/chat/MessageBubble';
 import { ChatInputDock } from '../../components/chat/ChatInputDock';
@@ -86,22 +86,25 @@ export const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({ route, navigatio
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="light-content" backgroundColor={Colors.backgroundPrimary} />
 
-      {/* Top Custom Frosted Header */}
+      {/* Top Frosted Glass Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <TouchableOpacity
             activeOpacity={0.7}
+            hitSlop={HitSlop.standard}
             onPress={() => navigation.goBack()}
             style={styles.backButton}
+            accessibilityLabel="Back to matches"
+            accessibilityRole="button"
           >
-            <ChevronLeft size={28} color="#FFFFFF" />
+            <ChevronLeft size={28} color={Colors.textPrimary} />
           </TouchableOpacity>
 
           <Avatar
             uri={partnerProfile.avatar}
-            size={42}
+            size={44}
             isOnline={partnerProfile.isOnline}
             isVerified={partnerProfile.isVerified}
           />
@@ -120,21 +123,33 @@ export const ChatRoomScreen: React.FC<ChatRoomScreenProps> = ({ route, navigatio
         <View style={styles.headerActions}>
           <TouchableOpacity
             activeOpacity={0.75}
+            hitSlop={HitSlop.standard}
             onPress={() => handleStartCall('AUDIO')}
             style={styles.actionPill}
+            accessibilityLabel="Voice call"
+            accessibilityRole="button"
           >
-            <Phone size={18} color="#FFFFFF" />
+            <Phone size={18} color={Colors.textPrimary} />
           </TouchableOpacity>
 
           <TouchableOpacity
             activeOpacity={0.75}
+            hitSlop={HitSlop.standard}
             onPress={() => handleStartCall('VIDEO')}
             style={[styles.actionPill, styles.videoPill]}
+            accessibilityLabel="Video call"
+            accessibilityRole="button"
           >
-            <Video size={18} color="#FFFFFF" />
+            <Video size={18} color={Colors.textPrimary} />
           </TouchableOpacity>
 
-          <TouchableOpacity activeOpacity={0.7} style={styles.moreButton}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            hitSlop={HitSlop.standard}
+            style={styles.moreButton}
+            accessibilityLabel="More options"
+            accessibilityRole="button"
+          >
             <MoreVertical size={20} color={Colors.textSecondary} />
           </TouchableOpacity>
         </View>
@@ -185,8 +200,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
-    backgroundColor: 'rgba(10, 13, 20, 0.95)',
+    borderBottomColor: Colors.divider,
+    backgroundColor: Colors.glassBackgroundDark,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -200,7 +215,7 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   partnerName: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '700',
     fontSize: 16,
   },
@@ -215,18 +230,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   actionPill: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: Colors.neutralCard,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: Colors.glassBorder,
   },
   videoPill: {
-    backgroundColor: 'rgba(139, 92, 246, 0.25)',
-    borderColor: Colors.secondary,
+    backgroundColor: 'rgba(124, 58, 237, 0.25)',
+    borderColor: Colors.brandSecondary,
   },
   moreButton: {
     width: 32,

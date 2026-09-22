@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { Colors, BorderRadius } from '../../theme';
+import { Colors, BorderRadius, Shadows } from '../../theme';
 
 interface GlassCardProps {
   children: React.ReactNode;
@@ -14,7 +14,7 @@ interface GlassCardProps {
 export const GlassCard: React.FC<GlassCardProps> = ({
   children,
   style,
-  intensity = 40,
+  intensity = 60,
   tint = 'dark',
   glowBorder = false,
 }) => {
@@ -37,11 +37,7 @@ const styles = StyleSheet.create({
   },
   glowBorder: {
     borderColor: Colors.glassBorderGlow,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 6,
+    ...Shadows.glowPrimary,
   },
   blurContainer: {
     width: '100%',

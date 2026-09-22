@@ -3,7 +3,7 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import { RotateCcw, X, Star, Heart, Zap } from 'lucide-react-native';
-import { Colors, BorderRadius, Shadows } from '../../theme';
+import { Colors, BorderRadius, Shadows, HitSlop, Metrics } from '../../theme';
 
 interface ActionDockProps {
   onUndo: () => void;
@@ -22,7 +22,10 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   onBoost,
   canUndo = true,
 }) => {
-  const triggerAction = (fn: () => void, feedback: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Medium) => {
+  const triggerAction = (
+    fn: () => void,
+    feedback: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Medium
+  ) => {
     try {
       Haptics.impactAsync(feedback);
     } catch (_) {}
@@ -31,47 +34,62 @@ export const ActionDock: React.FC<ActionDockProps> = ({
 
   return (
     <View style={styles.outerContainer}>
-      <BlurView intensity={50} tint="dark" style={styles.blurContainer}>
-        {/* 1. Undo Button */}
+      <BlurView intensity={70} tint="dark" style={styles.blurContainer}>
+        {/* 1. Undo Button (56x56dp minimum touch target) */}
         <TouchableOpacity
           activeOpacity={0.7}
           disabled={!canUndo}
+          hitSlop={HitSlop.standard}
+          accessibilityLabel="Undo last swipe"
+          accessibilityRole="button"
           onPress={() => triggerAction(onUndo, Haptics.ImpactFeedbackStyle.Light)}
           style={[styles.smallButton, !canUndo && styles.disabledButton]}
         >
           <RotateCcw size={22} color={Colors.undo} strokeWidth={2.4} />
         </TouchableOpacity>
 
-        {/* 2. Pass / Dislike (X) */}
+        {/* 2. Pass / Dislike Button (64x64dp) */}
         <TouchableOpacity
           activeOpacity={0.75}
+          hitSlop={HitSlop.standard}
+          accessibilityLabel="Pass on profile"
+          accessibilityRole="button"
           onPress={() => triggerAction(onPass, Haptics.ImpactFeedbackStyle.Heavy)}
           style={[styles.mainButton, styles.passButton]}
         >
-          <X size={32} color={Colors.pass} strokeWidth={2.8} />
+          <X size={32} color={Colors.pass} strokeWidth={3} />
         </TouchableOpacity>
 
-        {/* 3. Superlike (Cyan Star) */}
+        {/* 3. Superlike Button (56x56dp) */}
         <TouchableOpacity
           activeOpacity={0.75}
+          hitSlop={HitSlop.standard}
+          accessibilityLabel="Super like profile"
+          accessibilityRole="button"
           onPress={() => triggerAction(onSuperlike, Haptics.ImpactFeedbackStyle.Heavy)}
           style={[styles.smallButton, styles.superlikeButton]}
         >
           <Star size={24} color={Colors.superlike} fill={Colors.superlike} strokeWidth={1} />
         </TouchableOpacity>
 
-        {/* 4. Like (Emerald / Rose Heart) */}
+        {/* 4. Like Button (64x64dp) */}
         <TouchableOpacity
           activeOpacity={0.75}
+          hitSlop={HitSlop.standard}
+          accessibilityLabel="Like profile"
+          accessibilityRole="button"
           onPress={() => triggerAction(onLike, Haptics.ImpactFeedbackStyle.Heavy)}
           style={[styles.mainButton, styles.likeButton]}
         >
-          <Heart size={32} color={Colors.primary} fill={Colors.primary} strokeWidth={1} />
+          <Heart size={32} color={Colors.brandPrimary} fill={Colors.brandPrimary} strokeWidth={1} />
         </TouchableOpacity>
 
-        {/* 5. Boost (Lightning) */}
+        {/* 5. Boost Button (56x56dp) */}
         <TouchableOpacity
           activeOpacity={0.7}
+          hitSlop={HitSlop.standard}
+          accessibilityLabel="Boost profile visibility"
+          accessibilityRole="button"
           onPress={() => triggerAction(onBoost, Haptics.ImpactFeedbackStyle.Medium)}
           style={[styles.smallButton, styles.boostButton]}
         >
@@ -84,45 +102,46 @@ export const ActionDock: React.FC<ActionDockProps> = ({
 
 const styles = StyleSheet.create({
   outerContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingBottom: 16,
     alignItems: 'center',
+    width: '100%',
   },
   blurContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: BorderRadius.xxl,
-    backgroundColor: 'rgba(20, 24, 35, 0.75)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.glassBackground,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: Colors.glassBorder,
     width: '100%',
-    maxWidth: 380,
+    maxWidth: 390,
     ...Shadows.medium,
   },
   smallButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    width: Metrics.touchTargetMin, // 56dp per SKILL.md
+    height: Metrics.touchTargetMin,
+    borderRadius: Metrics.touchTargetMin / 2,
+    backgroundColor: Colors.neutralCard,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: Colors.glassBorder,
   },
   mainButton: {
-    width: 64,
+    width: 64, // 64dp
     height: 64,
     borderRadius: 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.09)',
+    backgroundColor: Colors.neutralCard,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
   },
   passButton: {
-    borderColor: 'rgba(239, 68, 68, 0.4)',
+    borderColor: Colors.passGlow,
     shadowColor: Colors.pass,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
@@ -130,15 +149,15 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   likeButton: {
-    borderColor: 'rgba(255, 45, 85, 0.45)',
-    shadowColor: Colors.primary,
+    borderColor: Colors.passGlow,
+    shadowColor: Colors.brandPrimary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.45,
     shadowRadius: 12,
     elevation: 8,
   },
   superlikeButton: {
-    borderColor: 'rgba(6, 182, 212, 0.4)',
+    borderColor: Colors.superlikeGlow,
     shadowColor: Colors.superlike,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.35,
@@ -146,7 +165,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   boostButton: {
-    borderColor: 'rgba(168, 85, 247, 0.4)',
+    borderColor: Colors.boostGlow,
   },
   disabledButton: {
     opacity: 0.35,

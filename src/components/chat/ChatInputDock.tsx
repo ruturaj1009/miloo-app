@@ -3,7 +3,7 @@ import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Plus, Mic, Smile, ArrowUp } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { Colors, BorderRadius, Spacing, Typography } from '../../theme';
+import { Colors, BorderRadius, Spacing, Typography, HitSlop, Shadows } from '../../theme';
 
 interface ChatInputDockProps {
   onSendMessage: (text: string) => void;
@@ -27,23 +27,38 @@ export const ChatInputDock: React.FC<ChatInputDockProps> = ({
 
   return (
     <View style={styles.outerContainer}>
-      <BlurView intensity={70} tint="dark" style={styles.blurContainer}>
+      <BlurView intensity={80} tint="dark" style={styles.blurContainer}>
         {/* Attachment button */}
         <TouchableOpacity
           activeOpacity={0.7}
+          hitSlop={HitSlop.small}
           onPress={onAttachMedia}
           style={styles.iconButton}
+          accessibilityLabel="Attach media"
+          accessibilityRole="button"
         >
           <Plus size={22} color={Colors.textSecondary} />
         </TouchableOpacity>
 
         {/* Mic voice note button */}
-        <TouchableOpacity activeOpacity={0.7} style={styles.iconButton}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          hitSlop={HitSlop.small}
+          style={styles.iconButton}
+          accessibilityLabel="Record voice message"
+          accessibilityRole="button"
+        >
           <Mic size={20} color={Colors.textSecondary} />
         </TouchableOpacity>
 
         {/* Emoji button */}
-        <TouchableOpacity activeOpacity={0.7} style={styles.iconButton}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          hitSlop={HitSlop.small}
+          style={styles.iconButton}
+          accessibilityLabel="Open emojis"
+          accessibilityRole="button"
+        >
           <Smile size={20} color={Colors.textSecondary} />
         </TouchableOpacity>
 
@@ -64,8 +79,10 @@ export const ChatInputDock: React.FC<ChatInputDockProps> = ({
           onPress={handleSend}
           disabled={!text.trim()}
           style={[styles.sendButton, text.trim() ? styles.sendActive : styles.sendDisabled]}
+          accessibilityLabel="Send message"
+          accessibilityRole="button"
         >
-          <ArrowUp size={20} color="#FFFFFF" strokeWidth={3} />
+          <ArrowUp size={20} color={Colors.textPrimary} strokeWidth={3} />
         </TouchableOpacity>
       </BlurView>
     </View>
@@ -83,10 +100,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 6,
-    borderRadius: BorderRadius.xxl,
-    backgroundColor: 'rgba(26, 31, 46, 0.85)',
+    borderRadius: BorderRadius.full,
+    backgroundColor: Colors.glassBackground,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: Colors.glassBorder,
+    ...Shadows.subtle,
   },
   iconButton: {
     width: 36,
@@ -98,7 +116,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     ...Typography.body,
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     paddingHorizontal: 10,
     paddingVertical: 8,
     maxHeight: 100,
@@ -113,12 +131,8 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   sendActive: {
-    backgroundColor: Colors.primary,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 4,
+    backgroundColor: Colors.brandPrimary,
+    ...Shadows.glowPrimary,
   },
   sendDisabled: {
     backgroundColor: 'rgba(255, 255, 255, 0.12)',

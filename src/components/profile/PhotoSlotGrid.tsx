@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { Plus, X } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { ProfileMedia } from '../../types/profile.types';
-import { Colors, BorderRadius, Spacing, Typography } from '../../theme';
+import { Colors, BorderRadius, Shadows, HitSlop } from '../../theme';
 
 interface PhotoSlotGridProps {
   photos: ProfileMedia[];
@@ -56,6 +56,8 @@ export const PhotoSlotGrid: React.FC<PhotoSlotGridProps> = ({
                   source={{ uri: photo.media_url }}
                   style={styles.photoImage}
                   contentFit="cover"
+                  priority="high"
+                  cachePolicy="memory-disk"
                 />
 
                 {/* Slot index or MAIN badge */}
@@ -66,10 +68,13 @@ export const PhotoSlotGrid: React.FC<PhotoSlotGridProps> = ({
                 {/* Delete photo button */}
                 <TouchableOpacity
                   activeOpacity={0.7}
+                  hitSlop={HitSlop.small}
                   onPress={() => onRemovePhoto(photo.media_id)}
                   style={styles.deleteButton}
+                  accessibilityLabel="Remove photo"
+                  accessibilityRole="button"
                 >
-                  <X size={14} color="#FFFFFF" strokeWidth={3} />
+                  <X size={14} color={Colors.textPrimary} strokeWidth={3} />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -77,12 +82,14 @@ export const PhotoSlotGrid: React.FC<PhotoSlotGridProps> = ({
                 activeOpacity={0.7}
                 onPress={pickImage}
                 style={styles.emptySlot}
+                accessibilityLabel={`Add photo to slot ${index + 1}`}
+                accessibilityRole="button"
               >
                 <View style={styles.slotIndexCorner}>
                   <Text style={styles.slotIndexText}>{index + 1}</Text>
                 </View>
                 <View style={styles.addIconCircle}>
-                  <Plus size={22} color={Colors.secondary} strokeWidth={2.5} />
+                  <Plus size={22} color={Colors.brandSecondary} strokeWidth={2.5} />
                 </View>
               </TouchableOpacity>
             )}
@@ -105,16 +112,13 @@ const styles = StyleSheet.create({
     aspectRatio: 3 / 4,
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    backgroundColor: Colors.neutralCard,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: Colors.glassBorder,
   },
   mainSlot: {
-    borderColor: Colors.secondary,
-    shadowColor: Colors.secondary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    borderColor: Colors.brandSecondary,
+    ...Shadows.glowSecondary,
   },
   photoWrapper: {
     width: '100%',
@@ -130,10 +134,10 @@ const styles = StyleSheet.create({
     height: '100%',
     borderStyle: 'dashed',
     borderWidth: 1.5,
-    borderColor: 'rgba(139, 92, 246, 0.4)',
+    borderColor: 'rgba(124, 58, 237, 0.4)',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(20, 24, 35, 0.4)',
+    backgroundColor: 'rgba(22, 25, 34, 0.5)',
   },
   slotIndexCorner: {
     position: 'absolute',
@@ -141,36 +145,36 @@ const styles = StyleSheet.create({
     left: 8,
   },
   slotIndexText: {
-    ...Typography.caption,
     color: Colors.textMuted,
     fontWeight: '700',
+    fontSize: 12,
   },
   addIconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(124, 58, 237, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.secondary,
+    borderColor: Colors.brandSecondary,
   },
   badge: {
     position: 'absolute',
     top: 6,
     left: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
     borderRadius: BorderRadius.xs,
   },
   mainBadge: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.brandSecondary,
   },
   indexBadge: {
     backgroundColor: 'rgba(0, 0, 0, 0.65)',
   },
   badgeText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 10,
     fontWeight: '800',
   },
@@ -178,10 +182,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 6,
     right: 6,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(239, 68, 68, 0.9)',
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: Colors.pass,
     alignItems: 'center',
     justifyContent: 'center',
   },

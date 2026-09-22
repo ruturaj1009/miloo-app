@@ -20,7 +20,7 @@ import Animated, {
 import * as Haptics from 'expo-haptics';
 import { CheckCircle2, MapPin, Info, Star } from 'lucide-react-native';
 import { UserProfile } from '../../types/profile.types';
-import { Colors, BorderRadius, Spacing, Typography, Shadows } from '../../theme';
+import { Colors, Gradients, BorderRadius, Spacing, Typography, Shadows, HitSlop } from '../../theme';
 import { TagBadge } from '../common/TagBadge';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -47,23 +47,41 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
   onOpenDetails,
 }) => {
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
-  const photos = profile.photos && profile.photos.length > 0
-    ? profile.photos
-    : [{ media_id: '1', user_id: profile.user_id, r2_object_key: '', media_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80', display_order: 0, created_at: '' }];
+  const photos =
+    profile.photos && profile.photos.length > 0
+      ? profile.photos
+      : [
+          {
+            media_id: '1',
+            user_id: profile.user_id,
+            r2_object_key: '',
+            media_url:
+              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80',
+            display_order: 0,
+            created_at: '',
+          },
+        ];
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const hasTriggeredThresholdHaptic = useSharedValue(false);
+
+  const triggerHaptic = (style: Haptics.ImpactFeedbackStyle) => {
+    try {
+      Haptics.impactAsync(style);
+    } catch (_) {}
+  };
 
   const handleNextPhoto = () => {
     if (activePhotoIndex < photos.length - 1) {
-      try { Haptics.selectionAsync(); } catch (_) {}
+      triggerHaptic(Haptics.ImpactFeedbackStyle.Light);
       setActivePhotoIndex(activePhotoIndex + 1);
     }
   };
 
   const handlePrevPhoto = () => {
     if (activePhotoIndex > 0) {
-      try { Haptics.selectionAsync(); } catch (_) {}
+      triggerHaptic(Haptics.ImpactFeedbackStyle.Light);
       setActivePhotoIndex(activePhotoIndex - 1);
     }
   };
@@ -73,18 +91,33 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
     .onUpdate((e) => {
       translateX.value = e.translationX;
       translateY.value = e.translationY;
+
+      // Haptic threshold crossing
+      const absX = Math.abs(e.translationX);
+      if (absX > SWIPE_THRESHOLD * 0.5 && !hasTriggeredThresholdHaptic.value) {
+        hasTriggeredThresholdHaptic.value = true;
+        runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
+      } else if (absX <= SWIPE_THRESHOLD * 0.5 && hasTriggeredThresholdHaptic.value) {
+        hasTriggeredThresholdHaptic.value = false;
+      }
     })
     .onEnd((e) => {
+      hasTriggeredThresholdHaptic.value = false;
+
       if (e.translationX > SWIPE_THRESHOLD) {
+        runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Medium);
         translateX.value = withSpring(SCREEN_WIDTH * 1.5, { velocity: e.velocityX });
         runOnJS(onSwipeRight)();
       } else if (e.translationX < -SWIPE_THRESHOLD) {
+        runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Medium);
         translateX.value = withSpring(-SCREEN_WIDTH * 1.5, { velocity: e.velocityX });
         runOnJS(onSwipeLeft)();
       } else if (e.translationY < UP_SWIPE_THRESHOLD) {
+        runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Heavy);
         translateY.value = withSpring(-SCREEN_HEIGHT * 1.5, { velocity: e.velocityY });
         runOnJS(onSwipeUp)();
       } else {
+        // Spring physics damping: 15, stiffness: 120 per SKILL.md
         translateX.value = withSpring(0, { damping: 15, stiffness: 120 });
         translateY.value = withSpring(0, { damping: 15, stiffness: 120 });
       }
@@ -100,7 +133,14 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
       };
     }
 
-    const rotateZ = `${interpolate(translateX.value, [-SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2], [-14, 0, 14])}deg`;
+    // Card Rotation Formula per SKILL.md:
+    // Translation: [-width, 0, width] -> Rotation: [-12deg, 0deg, 12deg]
+    const rotateZ = `${interpolate(
+      translateX.value,
+      [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
+      [-12, 0, 12]
+    )}deg`;
+
     return {
       transform: [
         { translateX: translateX.value },
@@ -110,34 +150,44 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
     };
   });
 
-  // Dynamic stamp styles
+  // Dynamic stamp styles per SKILL.md
   const likeStampStyle = useAnimatedStyle(() => ({
     opacity: interpolate(translateX.value, [20, SWIPE_THRESHOLD], [0, 1]),
-    transform: [{ scale: interpolate(translateX.value, [20, SWIPE_THRESHOLD], [0.8, 1.1]) }, { rotate: '-15deg' }],
+    transform: [
+      { scale: interpolate(translateX.value, [20, SWIPE_THRESHOLD], [0.8, 1.1]) },
+      { rotate: '-14deg' },
+    ],
   }));
 
   const nopeStampStyle = useAnimatedStyle(() => ({
     opacity: interpolate(translateX.value, [-20, -SWIPE_THRESHOLD], [0, 1]),
-    transform: [{ scale: interpolate(translateX.value, [-20, -SWIPE_THRESHOLD], [0.8, 1.1]) }, { rotate: '15deg' }],
+    transform: [
+      { scale: interpolate(translateX.value, [-20, -SWIPE_THRESHOLD], [0.8, 1.1]) },
+      { rotate: '14deg' },
+    ],
   }));
 
   const superlikeStampStyle = useAnimatedStyle(() => ({
     opacity: interpolate(translateY.value, [-20, UP_SWIPE_THRESHOLD], [0, 1]),
-    transform: [{ scale: interpolate(translateY.value, [-20, UP_SWIPE_THRESHOLD], [0.8, 1.2]) }],
+    transform: [
+      { scale: interpolate(translateY.value, [-20, UP_SWIPE_THRESHOLD], [0.8, 1.2]) },
+    ],
   }));
 
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[styles.cardContainer, cardAnimatedStyle]}>
-        {/* Profile Image */}
+        {/* Profile Image with high priority and memory-disk cache */}
         <Image
           source={{ uri: photos[activePhotoIndex].media_url }}
           style={styles.cardImage}
           contentFit="cover"
           transition={250}
+          priority="high"
+          cachePolicy="memory-disk"
         />
 
-        {/* Photo Story Segment Bars */}
+        {/* Photo Story Segment Bars (Instagram Story Style) */}
         {photos.length > 1 && (
           <View style={styles.segmentContainer}>
             {photos.map((_, i) => (
@@ -152,7 +202,7 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
           </View>
         )}
 
-        {/* Left / Right Tap Zones for Photo Cycling */}
+        {/* Left (35%) / Right (65%) Tap Zones for Photo Cycling */}
         <View style={styles.tapZonesContainer}>
           <Pressable style={styles.leftTapZone} onPress={handlePrevPhoto} />
           <Pressable style={styles.rightTapZone} onPress={handleNextPhoto} />
@@ -168,14 +218,14 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
         </Animated.View>
 
         <Animated.View style={[styles.stamp, styles.superlikeStamp, superlikeStampStyle]}>
-          <Star size={24} color="#FFFFFF" fill="#FFFFFF" style={{ marginRight: 6 }} />
+          <Star size={24} color={Colors.textPrimary} fill={Colors.textPrimary} style={{ marginRight: 6 }} />
           <Text style={styles.superlikeStampText}>SUPER LIKE</Text>
         </Animated.View>
 
-        {/* Bottom Dark Gradient Info Area */}
+        {/* Bottom 40% Dark Gradient Overlay for WCAG AA text legibility */}
         <LinearGradient
-          colors={['transparent', 'rgba(10, 13, 20, 0.4)', 'rgba(10, 13, 20, 0.95)']}
-          locations={[0, 0.4, 0.9]}
+          colors={Gradients.mediaBottomOverlay}
+          locations={[0, 1]}
           style={styles.cardInfoGradient}
         >
           {/* Header Row: Name, Age, Verified, Info Button */}
@@ -192,16 +242,17 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
 
             <TouchableOpacity
               activeOpacity={0.7}
+              hitSlop={HitSlop.standard}
               onPress={() => onOpenDetails(profile)}
               style={styles.infoButton}
             >
-              <Info size={20} color="#FFFFFF" />
+              <Info size={20} color={Colors.textPrimary} />
             </TouchableOpacity>
           </View>
 
           {/* Location Badge */}
           <View style={styles.locationPill}>
-            <MapPin size={14} color={Colors.primary} />
+            <MapPin size={14} color={Colors.brandPrimary} />
             <Text style={styles.locationText}>
               {profile.location.city || 'Tokyo'} • {profile.distance_km || 3} km away
             </Text>
@@ -229,12 +280,12 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
 const styles = StyleSheet.create({
   cardContainer: {
     position: 'absolute',
-    width: SCREEN_WIDTH - 24,
-    height: SCREEN_HEIGHT * 0.68,
-    borderRadius: BorderRadius.xxl,
+    width: SCREEN_WIDTH - 20,
+    height: SCREEN_HEIGHT * 0.77, // ~77% viewport height per SKILL.md
+    borderRadius: BorderRadius.card,
     overflow: 'hidden',
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: Colors.neutralCardBorder,
     backgroundColor: Colors.backgroundCard,
     ...Shadows.medium,
   },
@@ -257,8 +308,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   segmentBarActive: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#FFFFFF',
+    backgroundColor: Colors.textPrimary,
+    shadowColor: Colors.textPrimary,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.8,
     shadowRadius: 4,
@@ -293,7 +344,7 @@ const styles = StyleSheet.create({
     top: 40,
     left: 24,
     borderColor: Colors.like,
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    backgroundColor: Colors.likeBackground,
   },
   likeStampText: {
     color: Colors.like,
@@ -305,7 +356,7 @@ const styles = StyleSheet.create({
     top: 40,
     right: 24,
     borderColor: Colors.pass,
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: Colors.passBackground,
   },
   nopeStampText: {
     color: Colors.pass,
@@ -319,7 +370,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderColor: Colors.superlike,
-    backgroundColor: 'rgba(6, 182, 212, 0.25)',
+    backgroundColor: Colors.superlikeBackground,
   },
   superlikeStampText: {
     color: Colors.superlike,
@@ -332,9 +383,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    height: '42%',
+    justifyContent: 'flex-end',
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.lg,
-    paddingTop: Spacing.xxl,
     zIndex: 10,
   },
   nameRow: {
@@ -350,30 +402,31 @@ const styles = StyleSheet.create({
   ageText: {
     fontWeight: '400',
     fontSize: 28,
+    color: Colors.textPrimary,
   },
   verifiedIcon: {
     marginLeft: 8,
   },
   infoButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.neutralCard,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
+    borderColor: Colors.glassBorder,
   },
   locationPill: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(10, 13, 20, 0.65)',
+    backgroundColor: 'rgba(15, 17, 21, 0.75)',
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: BorderRadius.full,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.glassBorderSubtle,
     marginTop: 4,
     marginBottom: 8,
     gap: 6,

@@ -43,3 +43,4 @@ yarn-error.*
 # Claude CLI
 .claude/
 CLAUDE.md
+.idea

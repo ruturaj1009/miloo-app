@@ -8,7 +8,7 @@ import Animated, {
   Easing,
   interpolate,
 } from 'react-native-reanimated';
-import { Colors, Spacing, Typography } from '../../theme';
+import { Colors, Spacing, Typography, Shadows } from '../../theme';
 import { Image } from 'expo-image';
 import { CURRENT_USER } from '../../api/mock/mockData';
 
@@ -68,6 +68,8 @@ export const RadarScanner: React.FC = () => {
             source={{ uri: CURRENT_USER.photos[0]?.media_url }}
             style={styles.avatarImage}
             contentFit="cover"
+            priority="high"
+            cachePolicy="memory-disk"
           />
         </View>
       </View>
@@ -100,8 +102,8 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 2,
-    borderColor: Colors.primary,
-    backgroundColor: 'rgba(255, 45, 85, 0.12)',
+    borderColor: Colors.brandPrimary,
+    backgroundColor: Colors.passBackground,
   },
   centerAvatar: {
     width: 80,
@@ -109,12 +111,8 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     overflow: 'hidden',
     borderWidth: 3,
-    borderColor: Colors.primary,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.6,
-    shadowRadius: 16,
-    elevation: 10,
+    borderColor: Colors.brandPrimary,
+    ...Shadows.glowPrimary,
   },
   avatarImage: {
     width: '100%',
@@ -123,9 +121,11 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     marginBottom: Spacing.xs,
+    color: Colors.textPrimary,
   },
   subtitle: {
     textAlign: 'center',
     maxWidth: 280,
+    color: Colors.textSecondary,
   },
 });

@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { Flame, MessageCircle, User, SlidersHorizontal } from 'lucide-react-native';
 import { MainTabParamList } from '../types/navigation.types';
-import { Colors, BorderRadius } from '../theme';
+import { Colors, BorderRadius, Shadows } from '../theme';
 import { DiscoveryDeckScreen } from '../screens/discovery/DiscoveryDeckScreen';
 import { MatchesTrayScreen } from '../screens/matches/MatchesTrayScreen';
 import { ProfileViewScreen } from '../screens/profile/ProfileViewScreen';
@@ -20,7 +20,7 @@ export const MainTabNavigator: React.FC = () => {
         tabBarShowLabel: false,
         tabBarStyle: styles.tabBar,
         tabBarBackground: () => (
-          <BlurView intensity={75} tint="dark" style={styles.blurBackground} />
+          <BlurView intensity={85} tint="dark" style={styles.blurBackground} />
         ),
       }}
     >
@@ -32,9 +32,10 @@ export const MainTabNavigator: React.FC = () => {
             <View style={[styles.iconWrapper, focused && styles.iconActiveGlow]}>
               <Flame
                 size={26}
-                color={focused ? Colors.primary : Colors.textMuted}
-                fill={focused ? Colors.primary : 'none'}
+                color={focused ? Colors.brandPrimary : Colors.textMuted}
+                fill={focused ? Colors.brandPrimary : 'none'}
               />
+              {focused && <View style={[styles.activeDot, { backgroundColor: Colors.brandPrimary }]} />}
             </View>
           ),
         }}
@@ -48,9 +49,14 @@ export const MainTabNavigator: React.FC = () => {
             <View style={[styles.iconWrapper, focused && styles.iconActiveGlow]}>
               <MessageCircle
                 size={26}
-                color={focused ? Colors.secondary : Colors.textMuted}
-                fill={focused ? Colors.secondary : 'none'}
+                color={focused ? Colors.brandSecondaryLight : Colors.textMuted}
+                fill={focused ? Colors.brandSecondaryLight : 'none'}
               />
+              {focused && (
+                <View
+                  style={[styles.activeDot, { backgroundColor: Colors.brandSecondaryLight }]}
+                />
+              )}
             </View>
           ),
         }}
@@ -64,8 +70,9 @@ export const MainTabNavigator: React.FC = () => {
             <View style={[styles.iconWrapper, focused && styles.iconActiveGlow]}>
               <User
                 size={26}
-                color={focused ? '#FFFFFF' : Colors.textMuted}
+                color={focused ? Colors.textPrimary : Colors.textMuted}
               />
+              {focused && <View style={[styles.activeDot, { backgroundColor: Colors.textPrimary }]} />}
             </View>
           ),
         }}
@@ -79,8 +86,9 @@ export const MainTabNavigator: React.FC = () => {
             <View style={[styles.iconWrapper, focused && styles.iconActiveGlow]}>
               <SlidersHorizontal
                 size={26}
-                color={focused ? '#FFFFFF' : Colors.textMuted}
+                color={focused ? Colors.textPrimary : Colors.textMuted}
               />
+              {focused && <View style={[styles.activeDot, { backgroundColor: Colors.textPrimary }]} />}
             </View>
           ),
         }}
@@ -92,11 +100,11 @@ export const MainTabNavigator: React.FC = () => {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 22,
     left: 20,
     right: 20,
     height: 64,
-    borderRadius: BorderRadius.xxl,
+    borderRadius: BorderRadius.full,
     backgroundColor: 'transparent',
     borderTopWidth: 0,
     elevation: 10,
@@ -104,19 +112,27 @@ const styles = StyleSheet.create({
   },
   blurBackground: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(14, 18, 27, 0.88)',
+    backgroundColor: Colors.glassBackgroundDark,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: BorderRadius.xxl,
+    borderColor: Colors.glassBorder,
+    borderRadius: BorderRadius.full,
   },
   iconWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    position: 'relative',
   },
   iconActiveGlow: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: Colors.neutralCard,
+  },
+  activeDot: {
+    position: 'absolute',
+    bottom: 4,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
   },
 });

@@ -8,6 +8,7 @@ import {
   Switch,
   SafeAreaView,
   Alert,
+  StatusBar,
 } from 'react-native';
 import {
   MapPin,
@@ -21,7 +22,7 @@ import {
   Globe,
   Sliders,
 } from 'lucide-react-native';
-import { Colors, BorderRadius, Spacing, Typography } from '../../theme';
+import { Colors, BorderRadius, Spacing, Typography, HitSlop } from '../../theme';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { InterestedInType } from '../../types/profile.types';
@@ -56,8 +57,11 @@ export const SettingsPrefsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={Colors.backgroundPrimary} />
+
       <View style={styles.header}>
         <Text style={Typography.h1}>Discovery & Settings</Text>
+        <Text style={styles.headerSubtitle}>Configure your matching preferences</Text>
       </View>
 
       <ScrollView
@@ -66,13 +70,13 @@ export const SettingsPrefsScreen: React.FC = () => {
       >
         {/* Section 1: Discovery Preferences */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>DISCOVERY SETTINGS</Text>
+          <Text style={styles.sectionTitle}>DISCOVERY PREFERENCES</Text>
 
           {/* Maximum Distance */}
           <View style={styles.card}>
             <View style={styles.rowBetween}>
               <View style={styles.iconLabel}>
-                <MapPin size={20} color={Colors.primary} />
+                <MapPin size={20} color={Colors.brandPrimary} />
                 <Text style={styles.itemLabel}>Maximum Distance</Text>
               </View>
               <Text style={styles.valueHighlight}>{maxDistanceKm} km</Text>
@@ -84,10 +88,12 @@ export const SettingsPrefsScreen: React.FC = () => {
                 <TouchableOpacity
                   key={dist}
                   onPress={() => setMaxDistanceKm(dist)}
+                  hitSlop={HitSlop.small}
                   style={[
                     styles.chip,
                     maxDistanceKm === dist && styles.chipSelected,
                   ]}
+                  accessibilityRole="button"
                 >
                   <Text
                     style={[
@@ -106,10 +112,10 @@ export const SettingsPrefsScreen: React.FC = () => {
           <View style={styles.card}>
             <View style={styles.rowBetween}>
               <View style={styles.iconLabel}>
-                <Sliders size={20} color={Colors.secondary} />
+                <Sliders size={20} color={Colors.brandSecondaryLight} />
                 <Text style={styles.itemLabel}>Age Range</Text>
               </View>
-              <Text style={styles.valueHighlight}>
+              <Text style={styles.valueHighlightSecondary}>
                 {ageMinPref} - {ageMaxPref}
               </Text>
             </View>
@@ -125,15 +131,19 @@ export const SettingsPrefsScreen: React.FC = () => {
                 <TouchableOpacity
                   key={range.label}
                   onPress={() => setAgeRange(range.min, range.max)}
+                  hitSlop={HitSlop.small}
                   style={[
                     styles.chip,
-                    ageMinPref === range.min && ageMaxPref === range.max && styles.chipSelected,
+                    ageMinPref === range.min && ageMaxPref === range.max && styles.chipSelectedSecondary,
                   ]}
+                  accessibilityRole="button"
                 >
                   <Text
                     style={[
                       styles.chipText,
-                      ageMinPref === range.min && ageMaxPref === range.max && styles.chipTextSelected,
+                      ageMinPref === range.min &&
+                        ageMaxPref === range.max &&
+                        styles.chipTextSelected,
                     ]}
                   >
                     {range.label}
@@ -155,6 +165,7 @@ export const SettingsPrefsScreen: React.FC = () => {
                     styles.genderButton,
                     interestedIn === pref && styles.genderButtonSelected,
                   ]}
+                  accessibilityRole="button"
                 >
                   <Text
                     style={[
@@ -176,14 +187,14 @@ export const SettingsPrefsScreen: React.FC = () => {
                 <Globe size={20} color={Colors.accent} />
                 <View>
                   <Text style={styles.itemLabel}>Global Passport Mode</Text>
-                  <Text style={styles.itemSubtext}>Match with people worldwide</Text>
+                  <Text style={styles.itemSubtext}>Connect with people worldwide</Text>
                 </View>
               </View>
               <Switch
                 value={globalMode}
                 onValueChange={toggleGlobalMode}
-                trackColor={{ false: '#334155', true: Colors.secondary }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: '#334155', true: Colors.accent }}
+                thumbColor={Colors.textPrimary}
               />
             </View>
           </View>
@@ -191,19 +202,19 @@ export const SettingsPrefsScreen: React.FC = () => {
 
         {/* Section 2: Notifications & App Settings */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>APP & NOTIFICATIONS</Text>
+          <Text style={styles.sectionTitle}>APP & HAPTICS</Text>
 
           <View style={styles.card}>
             <View style={styles.rowBetween}>
               <View style={styles.iconLabel}>
-                <Bell size={20} color="#FFFFFF" />
+                <Bell size={20} color={Colors.textPrimary} />
                 <Text style={styles.itemLabel}>Push Notifications</Text>
               </View>
               <Switch
                 value={pushNotifications}
                 onValueChange={togglePushNotifications}
-                trackColor={{ false: '#334155', true: Colors.primary }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: '#334155', true: Colors.brandPrimary }}
+                thumbColor={Colors.textPrimary}
               />
             </View>
 
@@ -211,14 +222,14 @@ export const SettingsPrefsScreen: React.FC = () => {
 
             <View style={styles.rowBetween}>
               <View style={styles.iconLabel}>
-                <Volume2 size={20} color="#FFFFFF" />
+                <Volume2 size={20} color={Colors.textPrimary} />
                 <Text style={styles.itemLabel}>Sound Effects</Text>
               </View>
               <Switch
                 value={soundEffects}
                 onValueChange={toggleSoundEffects}
-                trackColor={{ false: '#334155', true: Colors.primary }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: '#334155', true: Colors.brandPrimary }}
+                thumbColor={Colors.textPrimary}
               />
             </View>
 
@@ -226,27 +237,27 @@ export const SettingsPrefsScreen: React.FC = () => {
 
             <View style={styles.rowBetween}>
               <View style={styles.iconLabel}>
-                <Vibrate size={20} color="#FFFFFF" />
+                <Vibrate size={20} color={Colors.textPrimary} />
                 <Text style={styles.itemLabel}>Tactile Haptics</Text>
               </View>
               <Switch
                 value={hapticsEnabled}
                 onValueChange={toggleHaptics}
-                trackColor={{ false: '#334155', true: Colors.primary }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: '#334155', true: Colors.brandPrimary }}
+                thumbColor={Colors.textPrimary}
               />
             </View>
           </View>
         </View>
 
-        {/* Section 3: Account & Safety */}
+        {/* Section 3: Account & Privacy */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>ACCOUNT & PRIVACY</Text>
 
           <View style={styles.card}>
-            <TouchableOpacity style={styles.rowBetween}>
+            <TouchableOpacity style={styles.rowBetween} hitSlop={HitSlop.small}>
               <View style={styles.iconLabel}>
-                <Shield size={20} color="#FFFFFF" />
+                <Shield size={20} color={Colors.textPrimary} />
                 <Text style={styles.itemLabel}>Privacy & Blocked Users</Text>
               </View>
               <ChevronRight size={18} color={Colors.textMuted} />
@@ -254,7 +265,11 @@ export const SettingsPrefsScreen: React.FC = () => {
 
             <View style={styles.divider} />
 
-            <TouchableOpacity onPress={handleLogout} style={styles.rowBetween}>
+            <TouchableOpacity
+              onPress={handleLogout}
+              style={styles.rowBetween}
+              hitSlop={HitSlop.small}
+            >
               <View style={styles.iconLabel}>
                 <LogOut size={20} color={Colors.undo} />
                 <Text style={[styles.itemLabel, { color: Colors.undo }]}>Log Out</Text>
@@ -263,7 +278,7 @@ export const SettingsPrefsScreen: React.FC = () => {
 
             <View style={styles.divider} />
 
-            <TouchableOpacity style={styles.rowBetween}>
+            <TouchableOpacity style={styles.rowBetween} hitSlop={HitSlop.small}>
               <View style={styles.iconLabel}>
                 <Trash2 size={20} color={Colors.pass} />
                 <Text style={[styles.itemLabel, { color: Colors.pass }]}>Delete Account</Text>
@@ -286,9 +301,15 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 8,
   },
+  headerSubtitle: {
+    ...Typography.caption,
+    color: Colors.textSecondary,
+    marginTop: 2,
+    fontSize: 13,
+  },
   scrollContent: {
     padding: Spacing.lg,
-    paddingBottom: 48,
+    paddingBottom: 90,
   },
   section: {
     marginBottom: Spacing.xl,
@@ -302,10 +323,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   card: {
-    backgroundColor: 'rgba(26, 31, 46, 0.75)',
+    backgroundColor: Colors.glassBackground,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: Colors.glassBorder,
     padding: Spacing.md,
     marginBottom: Spacing.sm,
   },
@@ -321,7 +342,7 @@ const styles = StyleSheet.create({
   },
   itemLabel: {
     ...Typography.body,
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '600',
     fontSize: 15,
   },
@@ -332,7 +353,12 @@ const styles = StyleSheet.create({
   },
   valueHighlight: {
     ...Typography.body,
-    color: Colors.primary,
+    color: Colors.brandPrimary,
+    fontWeight: '700',
+  },
+  valueHighlightSecondary: {
+    ...Typography.body,
+    color: Colors.brandSecondaryLight,
     fontWeight: '700',
   },
   distanceChipsRow: {
@@ -345,13 +371,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: BorderRadius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.07)',
+    backgroundColor: Colors.neutralCard,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: Colors.glassBorder,
   },
   chipSelected: {
-    backgroundColor: 'rgba(255, 45, 85, 0.25)',
-    borderColor: Colors.primary,
+    backgroundColor: Colors.passBackground,
+    borderColor: Colors.brandPrimary,
+  },
+  chipSelectedSecondary: {
+    backgroundColor: 'rgba(124, 58, 237, 0.25)',
+    borderColor: Colors.brandSecondary,
   },
   chipText: {
     color: Colors.textSecondary,
@@ -359,7 +389,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   chipTextSelected: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '700',
   },
   genderRow: {
@@ -371,14 +401,14 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     borderRadius: BorderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.07)',
+    backgroundColor: Colors.neutralCard,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: Colors.glassBorder,
   },
   genderButtonSelected: {
-    borderColor: Colors.secondary,
-    backgroundColor: 'rgba(139, 92, 246, 0.25)',
+    borderColor: Colors.brandSecondary,
+    backgroundColor: 'rgba(124, 58, 237, 0.25)',
   },
   genderBtnText: {
     color: Colors.textSecondary,
@@ -386,12 +416,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   genderBtnTextSelected: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '700',
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: Colors.divider,
     marginVertical: 12,
   },
 });

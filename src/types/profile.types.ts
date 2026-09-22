@@ -17,6 +17,12 @@ export interface UserLocation {
 export type GenderType = 'MAN' | 'WOMAN' | 'NON_BINARY' | 'OTHER';
 export type InterestedInType = 'MEN' | 'WOMEN' | 'EVERYONE';
 
+export interface ProfilePrompt {
+  id: string;
+  question: string;
+  answer: string;
+}
+
 export interface UserProfile {
   user_id: string;
   first_name: string;
@@ -34,6 +40,7 @@ export interface UserProfile {
   is_verified?: boolean;
   interest_tags: string[];
   photos: ProfileMedia[];
+  prompts?: ProfilePrompt[];
   job_title?: string;
   company?: string;
   school?: string;
